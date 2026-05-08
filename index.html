@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>服务运营平台 - 技术支持工单</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <div class="brand">
+          <span class="brand-mark"></span>
+          <div>
+            <strong>服务运营平台</strong>
+            <span>Service Operation Platform</span>
+          </div>
+        </div>
+        <div class="top-actions">
+          <button class="icon-button" aria-label="通知">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 16v-5a6 6 0 0 0-12 0v5l-2 2h16l-2-2Z"/><path d="M9.5 20a2.8 2.8 0 0 0 5 0"/></svg>
+          </button>
+          <button class="user-chip" type="button"><span></span>黄俊</button>
+          <button class="icon-button" aria-label="更多">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h.01M12 12h.01M19 12h.01"/></svg>
+          </button>
+        </div>
+      </header>
+
+      <aside class="sidebar" aria-label="主导航">
+        <button class="nav-item active" type="button">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v14H4z"/><path d="M8 9h8M8 13h5"/></svg>
+          技术支持工单
+        </button>
+        <button class="nav-item" type="button">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 3 21h18L12 3Z"/><path d="M12 9v5M12 18h.01"/></svg>
+          事件单
+        </button>
+        <button class="nav-item" type="button">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4h10v16H7z"/><path d="M10 8h4M10 12h4M10 16h2"/></svg>
+          问题单
+        </button>
+        <button class="nav-item" type="button">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h10a4 4 0 0 1 4 4v12H9a4 4 0 0 1-4-4V4Z"/><path d="M9 8h6M9 12h6"/></svg>
+          知识库工单
+        </button>
+        <button class="nav-item" type="button">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/></svg>
+          知识门户
+        </button>
+      </aside>
+
+      <main class="workspace">
+        <div class="tabs" aria-label="打开的页面">
+          <button class="tab active" type="button" data-view="list">技术支持工单</button>
+          <button class="tab" type="button" data-view="detail" id="detail-tab">工单详情</button>
+        </div>
+
+        <section class="view view-active" id="list-view" aria-label="技术支持工单列表">
+          <div class="page-heading">
+            <div>
+              <p class="breadcrumb">首页 / 技术支持工单</p>
+              <h1>技术支持工单</h1>
+            </div>
+            <div class="heading-actions">
+              <button class="button secondary" type="button" id="reset-demo-data">重置测试数据</button>
+              <button class="button secondary" type="button" id="export-data">导出JSON</button>
+              <button class="button primary" type="button" data-open-ticket="create">新建工单</button>
+            </div>
+          </div>
+
+          <form class="filter-panel" id="filter-form">
+            <label>
+              <span>关键词</span>
+              <input id="keyword" type="search" placeholder="编号/标题/VIN/服务站/故障码" />
+            </label>
+            <label>
+              <span>来源</span>
+              <select id="source-filter">
+                <option value="">全部</option>
+                <option>服务站提单</option>
+                <option>400工单</option>
+                <option>车联网告警</option>
+                <option>手工新建</option>
+              </select>
+            </label>
+            <label>
+              <span>状态</span>
+              <select id="status-filter">
+                <option value="">全部</option>
+                <option>草稿</option>
+                <option>待受理</option>
+                <option>处理中</option>
+                <option>待补充</option>
+                <option>已解决待确认</option>
+                <option>已关闭</option>
+              </select>
+            </label>
+            <label>
+              <span>优先级</span>
+              <select id="priority-filter">
+                <option value="">全部</option>
+                <option>普通</option>
+                <option>紧急</option>
+                <option>高风险</option>
+              </select>
+            </label>
+            <label>
+              <span>处理人</span>
+              <select id="owner-filter">
+                <option value="">全部</option>
+                <option>未分派</option>
+                <option>张三</option>
+                <option>李敏</option>
+                <option>周伟</option>
+                <option>陈工</option>
+              </select>
+            </label>
+            <label>
+              <span>车型</span>
+              <select id="model-filter">
+                <option value="">全部</option>
+                <option>X6</option>
+                <option>E9</option>
+                <option>M5</option>
+                <option>S7</option>
+              </select>
+            </label>
+            <label>
+              <span>关联告警</span>
+              <select id="alarm-filter">
+                <option value="">全部</option>
+                <option value="yes">是</option>
+                <option value="no">否</option>
+              </select>
+            </label>
+            <label>
+              <span>SLA</span>
+              <select id="sla-filter">
+                <option value="">全部</option>
+                <option>正常</option>
+                <option>即将超时</option>
+                <option>已超时</option>
+              </select>
+            </label>
+            <div class="filter-actions">
+              <button class="button primary" type="submit">查询</button>
+              <button class="button ghost" type="reset" id="reset-filter">重置</button>
+            </div>
+          </form>
+
+          <div class="summary-strip" id="summary-strip"></div>
+
+          <div class="table-shell">
+            <table>
+              <thead>
+                <tr>
+                  <th>编号</th>
+                  <th>来源</th>
+                  <th>标题</th>
+                  <th>服务站</th>
+                  <th>车型/VIN</th>
+                  <th>状态</th>
+                  <th>优先级</th>
+                  <th>SLA</th>
+                  <th>处理人</th>
+                  <th>创建时间</th>
+                  <th>操作</th>
+                </tr>
+              </thead>
+              <tbody id="ticket-table"></tbody>
+            </table>
+            <div class="empty-state" id="empty-state">暂无符合条件的技术支持工单</div>
+          </div>
+          <div class="pagination">
+            <span id="result-count">共 0 条</span>
+            <div>
+              <button type="button">&lt;</button>
+              <button class="active" type="button">1</button>
+              <button type="button">2</button>
+              <button type="button">3</button>
+              <button type="button">&gt;</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="view" id="detail-view" aria-label="技术支持工单详情">
+          <div id="detail-root" class="detail-root"></div>
+        </section>
+      </main>
+    </div>
+
+    <div class="modal-backdrop" id="ticket-modal" role="dialog" aria-modal="true" aria-labelledby="ticket-modal-title">
+      <form class="modal large" id="ticket-form">
+        <div class="modal-header">
+          <h2 id="ticket-modal-title">新建技术支持工单</h2>
+          <button class="icon-button close-modal" type="button" aria-label="关闭">×</button>
+        </div>
+        <input type="hidden" name="id" />
+        <div class="form-grid">
+          <fieldset class="radio-group full">
+            <legend>来源类型</legend>
+            <label><input type="radio" name="source" value="服务站提单" checked /> 服务站提单</label>
+            <label><input type="radio" name="source" value="400工单" /> 400工单</label>
+            <label><input type="radio" name="source" value="车联网告警" /> 车联网告警</label>
+            <label><input type="radio" name="source" value="手工新建" /> 手工新建</label>
+          </fieldset>
+          <label class="span-2"><span>工单标题</span><input name="title" required maxlength="80" /></label>
+          <label><span>优先级</span><select name="priority"><option>普通</option><option>紧急</option><option>高风险</option></select></label>
+          <label><span>处理人</span><select name="owner"><option>未分派</option><option>张三</option><option>李敏</option><option>周伟</option><option>陈工</option></select></label>
+          <label><span>服务站</span><input name="station" required /></label>
+          <label><span>服务站编码</span><input name="stationCode" /></label>
+          <label><span>所属区域</span><input name="region" /></label>
+          <label><span>提单人</span><input name="reporter" required /></label>
+          <label><span>联系方式</span><input name="phone" /></label>
+          <label><span>VIN</span><input name="vin" maxlength="17" /></label>
+          <label><span>车型</span><select name="model"><option>X6</option><option>E9</option><option>M5</option><option>S7</option></select></label>
+          <label><span>年款/配置</span><input name="year" /></label>
+          <label><span>里程</span><input name="mileage" placeholder="12000 km" /></label>
+          <label><span>保修状态</span><select name="warranty"><option>保内</option><option>保外</option><option>待确认</option></select></label>
+          <label><span>故障发生时间</span><input name="faultTime" type="datetime-local" /></label>
+          <label><span>故障频率</span><select name="frequency"><option>偶发</option><option>频发</option><option>持续</option></select></label>
+          <label><span>安全影响</span><select name="safetyImpact"><option>待评估</option><option>是</option><option>否</option></select></label>
+          <label class="full"><span>故障现象</span><textarea name="symptom" required></textarea></label>
+          <label class="full"><span>服务站已做检查</span><textarea name="checks"></textarea></label>
+          <label class="full"><span>服务站诉求</span><textarea name="request"></textarea></label>
+          <label><span>400工单</span><input name="order400" placeholder="400-00123" /></label>
+          <label><span>车联网告警</span><input name="alarmNo" placeholder="ALM-00981" /></label>
+          <label><span>告警等级</span><select name="alarmLevel"><option value="">无</option><option>一级</option><option>二级</option><option>三级</option></select></label>
+          <label class="full"><span>附件名，多个用逗号分隔</span><input name="attachments" placeholder="诊断报告.pdf, 现场照片.jpg" /></label>
+        </div>
+        <div class="modal-footer">
+          <button class="button ghost close-modal" type="button">取消</button>
+          <button class="button secondary" type="button" id="save-draft">保存草稿</button>
+          <button class="button primary" type="submit">提交工单</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="modal-backdrop" id="action-modal" role="dialog" aria-modal="true" aria-labelledby="action-modal-title">
+      <form class="modal" id="action-form">
+        <div class="modal-header">
+          <h2 id="action-modal-title">处理工单</h2>
+          <button class="icon-button close-modal" type="button" aria-label="关闭">×</button>
+        </div>
+        <input type="hidden" name="action" />
+        <div id="action-fields" class="action-fields"></div>
+        <div class="modal-footer">
+          <button class="button ghost close-modal" type="button">取消</button>
+          <button class="button primary" type="submit" id="action-submit">确认</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script src="./app.js"></script>
+  </body>
+</html>
