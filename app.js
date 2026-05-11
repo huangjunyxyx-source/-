@@ -1,9 +1,27 @@
-const STORAGE_KEY = "sop-tech-support-tickets-v2";
-const CURRENT_USER = "张三";
+const STORAGE_KEY = "sop-tech-support-tickets-v3";
+const VERSION = "0.2.0";
+
+const SUPPORT_GROUPS = {
+  L1: {
+    name: "L1一线技术支持组",
+    slaHours: 2,
+    people: ["张三", "李敏", "周伟"]
+  },
+  L2: {
+    name: "L2二线技术专家组",
+    slaHours: 24,
+    people: ["陈工", "王工", "刘工"]
+  },
+  L3: {
+    name: "L3高级专家/研发支持组",
+    slaHours: 72,
+    people: ["赵专家", "孙专家", "研发韩工"]
+  }
+};
 
 const defaultTickets = [
-  {
-    id: "TS-202605080001",
+  ticket({
+    id: "TS-202605110001",
     source: "服务站提单",
     title: "PTCan busoff 故障（X6上为PCAN_busoff）",
     station: "上海浦东瑞驰服务站",
@@ -18,31 +36,28 @@ const defaultTickets = [
     warranty: "保内",
     status: "处理中",
     priority: "普通",
-    sla: "正常",
     owner: "张三",
-    createdAt: "2026-05-08 13:39",
-    updatedAt: "2026-05-08 15:20",
-    faultTime: "2026-05-08 09:35",
+    level: "L1",
+    levelStartedAt: "2026-05-11 09:20",
+    levelDueAt: "2026-05-11 11:20",
+    createdAt: "2026-05-11 09:18",
+    updatedAt: "2026-05-11 09:20",
+    faultTime: "2026-05-11 08:35",
     frequency: "偶发",
     safetyImpact: "待评估",
     symptom: "车辆上电后偶发通信中断，仪表提示异常，服务站读取到 PTCan busoff 相关故障码。",
     checks: "已读取 DTC，已检查网关线束，暂未发现明显外观损伤。",
     request: "请求主机厂提供进一步诊断建议，并确认是否需要更换网关控制器。",
-    order400: "400-20260508-0319",
+    order400: "400-20260511-0319",
     alarmNo: "ALM-CAN-00981",
     alarmLevel: "二级",
-    eventIds: [],
-    problemIds: [],
-    knowledgeIds: [],
     attachments: ["诊断报告.pdf", "现场照片.jpg", "gateway_log.zip"],
     logs: [
-      log("15:20", "服务站王磊", "补充材料", "补充 gateway_log.zip，故障发生前 30 秒网关日志已上传。", true, ["gateway_log.zip"], "待补充", "处理中"),
-      log("14:10", "张三", "要求补充材料", "请上传网关日志、DTC截图和现场线束照片。", true, [], "处理中", "待补充"),
-      log("13:40", "张三", "受理工单", "已受理并开始诊断。", false, [], "待受理", "处理中")
+      log("09:20", "张三", "L1受理工单", "已进入 L1 处理，SLA 2小时。", false, [], "待受理", "处理中")
     ]
-  },
-  {
-    id: "TS-202605080002",
+  }),
+  ticket({
+    id: "TS-202605110002",
     source: "车联网告警",
     title: "高压电池热管理告警，电池入口温度异常升高",
     station: "杭州城西智行服务站",
@@ -57,11 +72,13 @@ const defaultTickets = [
     warranty: "保内",
     status: "待受理",
     priority: "高风险",
-    sla: "已超时",
     owner: "未分派",
-    createdAt: "2026-05-08 11:10",
-    updatedAt: "2026-05-08 11:10",
-    faultTime: "2026-05-08 10:54",
+    level: "L1",
+    levelStartedAt: "",
+    levelDueAt: "",
+    createdAt: "2026-05-11 08:10",
+    updatedAt: "2026-05-11 08:10",
+    faultTime: "2026-05-11 07:54",
     frequency: "持续",
     safetyImpact: "是",
     symptom: "车联网平台连续 3 次上报电池入口温度高于阈值，车辆未进站。",
@@ -70,16 +87,13 @@ const defaultTickets = [
     order400: "",
     alarmNo: "ALM-BMS-02017",
     alarmLevel: "一级",
-    eventIds: [],
-    problemIds: [],
-    knowledgeIds: [],
     attachments: ["BMS告警快照.json", "近24小时温度曲线.png"],
-    logs: [log("11:10", "车联网平台", "自动建单", "一级告警自动生成技术支持工单。", false, ["BMS告警快照.json"], "-", "待受理")]
-  },
-  {
-    id: "TS-202605080003",
+    logs: [log("08:10", "车联网平台", "自动建单", "一级告警自动生成技术支持工单，默认进入 L1。", false, ["BMS告警快照.json"], "-", "待受理")]
+  }),
+  ticket({
+    id: "TS-202605100014",
     source: "400工单",
-    title: "客户反馈低速转向异响，服务站无法复现",
+    title: "客户反馈低速转向异响，L1已升级L2",
     station: "南京江宁弘远服务站",
     stationCode: "NJ-JN-012",
     region: "华东一区",
@@ -90,32 +104,79 @@ const defaultTickets = [
     vin: "LJXCLD3A7P0003321",
     mileage: "28400 km",
     warranty: "保内",
-    status: "待补充",
+    status: "处理中",
     priority: "紧急",
-    sla: "即将超时",
-    owner: "李敏",
-    createdAt: "2026-05-08 10:24",
-    updatedAt: "2026-05-08 11:38",
-    faultTime: "2026-05-07 18:20",
+    owner: "陈工",
+    level: "L2",
+    levelStartedAt: "2026-05-10 15:40",
+    levelDueAt: "2026-05-11 15:40",
+    createdAt: "2026-05-10 13:24",
+    updatedAt: "2026-05-10 15:40",
+    faultTime: "2026-05-10 11:20",
     frequency: "频发",
     safetyImpact: "否",
     symptom: "客户称低速转向和过减速带时前舱有金属敲击声，服务站首次路试未复现。",
     checks: "已检查底盘紧固件和减震器外观，未见异常。",
     request: "请提供进一步排查路径，判断是否需要更换转向机或前减震总成。",
-    order400: "400-20260508-0112",
+    order400: "400-20260510-0112",
     alarmNo: "",
     alarmLevel: "",
-    eventIds: [],
-    problemIds: [],
-    knowledgeIds: [],
     attachments: ["400通话摘要.txt", "底盘检查照片.zip"],
+    stages: {
+      L1: stage("李敏", "2026-05-10 13:40", "2026-05-10 15:40", "升级L2", "排查需要底盘异响专家介入"),
+      L2: stage("陈工", "2026-05-10 15:40", "2026-05-11 15:40", "处理中", "")
+    },
     logs: [
-      log("11:38", "李敏", "要求补充材料", "请服务站补充异响录音、举升检查视频和二次路试记录。", true, [], "处理中", "待补充"),
-      log("10:40", "李敏", "受理工单", "已从400工单转技术支持处理。", false, [], "待受理", "处理中")
+      log("15:40", "李敏", "升级至L2", "L1 无法判断异响源，升级至 L2 二线技术专家组，指派陈工。", false, [], "L1", "L2"),
+      log("13:40", "李敏", "L1受理工单", "已从400工单转技术支持处理。", false, [], "待受理", "处理中")
     ]
-  },
-  {
-    id: "TS-202605070021",
+  }),
+  ticket({
+    id: "TS-202605090021",
+    source: "服务站提单",
+    title: "雨天快充口盖偶发无法弹开，已升级L3",
+    station: "成都高新众诚服务站",
+    stationCode: "CD-GX-009",
+    region: "西南一区",
+    reporter: "马骁",
+    phone: "135****7402",
+    model: "S7",
+    year: "2025款 Max版",
+    vin: "LJXCLD3A2P0005172",
+    mileage: "15800 km",
+    warranty: "保内",
+    status: "处理中",
+    priority: "高风险",
+    owner: "赵专家",
+    level: "L3",
+    levelStartedAt: "2026-05-10 10:30",
+    levelDueAt: "2026-05-13 10:30",
+    createdAt: "2026-05-09 14:20",
+    updatedAt: "2026-05-10 10:30",
+    faultTime: "2026-05-09 09:30",
+    frequency: "频发",
+    safetyImpact: "否",
+    symptom: "雨天或洗车后，快充口盖按压无响应，车辆干燥后恢复。",
+    checks: "服务站检查充电口盖执行器插头有轻微水迹。",
+    request: "请确认是否有防水改进件或临时处理方案。",
+    order400: "400-20260509-0286",
+    alarmNo: "",
+    alarmLevel: "",
+    eventIds: ["EV-20260510-0002"],
+    attachments: ["充电口盖视频.mp4", "插头水迹照片.jpg"],
+    stages: {
+      L1: stage("周伟", "2026-05-09 14:28", "2026-05-09 16:28", "升级L2", "现场判断涉及零件结构"),
+      L2: stage("王工", "2026-05-09 16:40", "2026-05-10 16:40", "升级L3", "疑似设计防水改进问题"),
+      L3: stage("赵专家", "2026-05-10 10:30", "2026-05-13 10:30", "处理中", "")
+    },
+    logs: [
+      log("10:30", "王工", "升级至L3", "L2 判断疑似结构设计问题，升级 L3 高级专家处理。", false, [], "L2", "L3"),
+      log("16:40", "周伟", "升级至L2", "L1 现场排查无法确认根因，升级 L2。", false, [], "L1", "L2"),
+      log("14:28", "周伟", "L1受理工单", "已纳入充电口盖进水问题点跟踪。", false, [], "待受理", "处理中")
+    ]
+  }),
+  ticket({
+    id: "TS-202605080018",
     source: "服务站提单",
     title: "仪表偶发黑屏后 5 秒内自行恢复",
     station: "苏州工业园卓越服务站",
@@ -130,11 +191,13 @@ const defaultTickets = [
     warranty: "保内",
     status: "已解决待确认",
     priority: "普通",
-    sla: "正常",
-    owner: "周伟",
-    createdAt: "2026-05-07 16:42",
-    updatedAt: "2026-05-08 09:30",
-    faultTime: "2026-05-07 15:10",
+    owner: "张三",
+    level: "L1",
+    levelStartedAt: "2026-05-08 17:05",
+    levelDueAt: "2026-05-08 19:05",
+    createdAt: "2026-05-08 16:42",
+    updatedAt: "2026-05-08 17:30",
+    faultTime: "2026-05-08 15:10",
     frequency: "偶发",
     safetyImpact: "否",
     symptom: "客户反馈仪表偶发黑屏，约 5 秒后自行恢复，故障期间中控屏正常。",
@@ -143,54 +206,17 @@ const defaultTickets = [
     order400: "",
     alarmNo: "ALM-ICM-00422",
     alarmLevel: "三级",
-    eventIds: [],
-    problemIds: [],
     knowledgeIds: ["KB-20260508-0004"],
     attachments: ["仪表黑屏视频.mp4", "DTC截图.png"],
+    stages: {
+      L1: stage("张三", "2026-05-08 17:05", "2026-05-08 19:05", "已解决", "建议刷新仪表控制器至 ICM_25.04.12")
+    },
     logs: [
-      log("09:30", "周伟", "给出解决方案", "建议刷新仪表控制器至 ICM_25.04.12，并观察 7 天。", true, [], "处理中", "已解决待确认"),
-      log("17:05", "周伟", "受理工单", "已确认软件版本低于当前发布版本。", false, [], "待受理", "处理中")
+      log("17:30", "张三", "给出解决方案", "建议刷新仪表控制器至 ICM_25.04.12，并观察 7 天。", true, [], "处理中", "已解决待确认"),
+      log("17:05", "张三", "L1受理工单", "已确认软件版本低于当前发布版本。", false, [], "待受理", "处理中")
     ]
-  },
-  {
-    id: "TS-202605070018",
-    source: "服务站提单",
-    title: "雨天快充口盖偶发无法弹开",
-    station: "成都高新众诚服务站",
-    stationCode: "CD-GX-009",
-    region: "西南一区",
-    reporter: "马骁",
-    phone: "135****7402",
-    model: "S7",
-    year: "2025款 Max版",
-    vin: "LJXCLD3A2P0005172",
-    mileage: "15800 km",
-    warranty: "保内",
-    status: "处理中",
-    priority: "紧急",
-    sla: "正常",
-    owner: "陈工",
-    createdAt: "2026-05-07 14:20",
-    updatedAt: "2026-05-08 10:18",
-    faultTime: "2026-05-06 21:30",
-    frequency: "频发",
-    safetyImpact: "否",
-    symptom: "雨天或洗车后，快充口盖按压无响应，车辆干燥后恢复。",
-    checks: "服务站检查充电口盖执行器插头有轻微水迹。",
-    request: "请确认是否有防水改进件或临时处理方案。",
-    order400: "400-20260507-0286",
-    alarmNo: "",
-    alarmLevel: "",
-    eventIds: ["EV-20260508-0002"],
-    problemIds: [],
-    knowledgeIds: [],
-    attachments: ["充电口盖视频.mp4", "插头水迹照片.jpg"],
-    logs: [
-      log("10:18", "陈工", "回复处理意见", "请先清洁插头并涂覆导电保护剂，等待零件工程师确认改进件状态。", true, [], "处理中", "处理中"),
-      log("14:28", "陈工", "受理工单", "已纳入充电口盖进水问题点跟踪。", false, [], "待受理", "处理中")
-    ]
-  },
-  {
+  }),
+  ticket({
     id: "TS-202605060014",
     source: "400工单",
     title: "远程空调启动失败，App 显示车辆离线",
@@ -206,8 +232,10 @@ const defaultTickets = [
     warranty: "保内",
     status: "已关闭",
     priority: "普通",
-    sla: "正常",
     owner: "张三",
+    level: "L1",
+    levelStartedAt: "2026-05-06 09:33",
+    levelDueAt: "2026-05-06 11:33",
     createdAt: "2026-05-06 09:18",
     updatedAt: "2026-05-06 16:32",
     faultTime: "2026-05-05 22:06",
@@ -219,22 +247,36 @@ const defaultTickets = [
     order400: "400-20260506-0089",
     alarmNo: "",
     alarmLevel: "",
-    eventIds: [],
-    problemIds: [],
     knowledgeIds: ["KB-20260506-0007"],
     attachments: ["App报错截图.jpg", "TBOX在线记录.csv"],
+    satisfaction: {
+      status: "已评分",
+      channel: "客服代录",
+      score: 5,
+      solved: "是",
+      comment: "客服回访客户确认已解决，客户认可解释。",
+      rater: "400客服 梁晨",
+      ratedAt: "2026-05-06 17:10"
+    },
+    stages: {
+      L1: stage("张三", "2026-05-06 09:33", "2026-05-06 11:33", "已解决", "后台确认运营商网络波动导致")
+    },
     logs: [
+      log("17:10", "400客服 梁晨", "满意度评分", "客服代录评分：5星，问题已解决。", true, [], "待评分", "已评分"),
       log("16:32", "张三", "关闭工单", "后台确认运营商网络波动导致，车辆端无故障，已回复服务站。", true, [], "已解决待确认", "已关闭"),
       log("15:10", "张三", "给出解决方案", "建议服务站向客户说明网络覆盖波动原因，并引导客户重试。", true, [], "处理中", "已解决待确认"),
-      log("09:33", "张三", "受理工单", "已查询 TBOX 在线状态。", false, [], "待受理", "处理中")
+      log("09:33", "张三", "L1受理工单", "已查询 TBOX 在线状态。", false, [], "待受理", "处理中")
     ]
-  }
+  })
 ];
 
 let tickets = loadTickets();
 let currentTicketId = tickets[0]?.id || null;
+let currentUser = "张三";
+let activeListTab = "全部";
 
 const els = {
+  currentUser: document.querySelector("#current-user"),
   tableBody: document.querySelector("#ticket-table"),
   emptyState: document.querySelector("#empty-state"),
   resultCount: document.querySelector("#result-count"),
@@ -248,6 +290,7 @@ const els = {
   slaFilter: document.querySelector("#sla-filter"),
   filterForm: document.querySelector("#filter-form"),
   resetFilter: document.querySelector("#reset-filter"),
+  listTabs: document.querySelector("#list-tabs"),
   listView: document.querySelector("#list-view"),
   detailView: document.querySelector("#detail-view"),
   detailRoot: document.querySelector("#detail-root"),
@@ -266,8 +309,31 @@ const els = {
   toast: document.querySelector("#toast")
 };
 
+function ticket(data) {
+  return {
+    eventIds: [],
+    problemIds: [],
+    knowledgeIds: [],
+    attachments: [],
+    stages: {},
+    satisfaction: defaultSatisfaction(data.source),
+    logs: [],
+    ...data
+  };
+}
+
+function stage(owner = "", start = "", due = "", result = "未开始", note = "") {
+  return { owner, start, due, result, note };
+}
+
 function log(time, actor, action, content, visibleToStation, attachments = [], from = "-", to = "-") {
   return { time, actor, action, content, visibleToStation, attachments, from, to };
+}
+
+function defaultSatisfaction(source) {
+  if (source === "服务站提单") return { status: "未触发", channel: "服务站评分" };
+  if (source === "400工单") return { status: "未触发", channel: "客服代录" };
+  return { status: "不适用", channel: "不适用" };
 }
 
 function loadTickets() {
@@ -307,17 +373,24 @@ function shortTime() {
   return `${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}`;
 }
 
+function addHours(timeText, hours) {
+  const date = timeText ? new Date(timeText.replace(" ", "T")) : new Date();
+  date.setHours(date.getHours() + hours);
+  const pad = (value) => String(value).padStart(2, "0");
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}`;
+}
+
 function nextTicketId() {
-  const today = "20260508";
-  const max = tickets.reduce((acc, ticket) => {
-    const match = ticket.id.match(/TS-\d{8}(\d{4})/);
+  const today = "20260511";
+  const max = tickets.reduce((acc, item) => {
+    const match = item.id.match(/TS-\d{8}(\d{4})/);
     return Math.max(acc, match ? Number(match[1]) : 0);
   }, 0);
   return `TS-${today}${String(max + 1).padStart(4, "0")}`;
 }
 
 function getTicket(id = currentTicketId) {
-  return tickets.find((ticket) => ticket.id === id) || tickets[0];
+  return tickets.find((item) => item.id === id) || tickets[0];
 }
 
 function statusClass(value) {
@@ -334,215 +407,317 @@ function slaClass(value) {
   return "success";
 }
 
-function isClosed(ticket) {
-  return ticket.status === "已关闭";
+function levelClass(level) {
+  return level === "L3" ? "danger" : level === "L2" ? "warning" : "info";
 }
 
-function canEdit(ticket) {
-  return !isClosed(ticket);
+function isClosed(item) {
+  return item.status === "已关闭";
+}
+
+function canEdit(item) {
+  return !isClosed(item);
+}
+
+function groupOf(item) {
+  return SUPPORT_GROUPS[item.level] || SUPPORT_GROUPS.L1;
+}
+
+function slaStatus(item) {
+  if (item.status === "草稿") return "不计入";
+  if (item.status === "已关闭") return "正常";
+  if (!item.levelDueAt) return "正常";
+  const now = new Date();
+  const due = new Date(item.levelDueAt.replace(" ", "T"));
+  if (now > due) return "已超时";
+  const remainingMs = due - now;
+  const thresholdMs = Math.min(groupOf(item).slaHours * 0.25, 2) * 60 * 60 * 1000;
+  return remainingMs <= thresholdMs ? "即将超时" : "正常";
+}
+
+function slaText(item) {
+  if (item.status === "草稿") return "草稿不计入";
+  if (!item.levelStartedAt || !item.levelDueAt) return `${item.level} ${groupOf(item).slaHours}小时，待受理后计时`;
+  return `${item.level} ${groupOf(item).slaHours}小时 · ${item.levelStartedAt} 至 ${item.levelDueAt}`;
+}
+
+function ownerOptions(level, includeUnassigned = false) {
+  const options = includeUnassigned ? [`<option>未分派</option>`] : [];
+  options.push(...SUPPORT_GROUPS[level].people.map((person) => `<option>${person}</option>`));
+  return options.join("");
+}
+
+function allPeople() {
+  return Object.values(SUPPORT_GROUPS).flatMap((group) => group.people);
 }
 
 function filteredTickets() {
   const search = els.keyword.value.trim().toLowerCase();
-  return tickets.filter((ticket) => {
+  return tickets.filter((item) => {
     const searchable = [
-      ticket.id,
-      ticket.title,
-      ticket.vin,
-      ticket.station,
-      ticket.model,
-      ticket.order400,
-      ticket.alarmNo,
-      ticket.symptom
-    ]
-      .join(" ")
-      .toLowerCase();
+      item.id,
+      item.title,
+      item.vin,
+      item.station,
+      item.model,
+      item.order400,
+      item.alarmNo,
+      item.symptom,
+      item.level,
+      item.owner
+    ].join(" ").toLowerCase();
+
+    const tabMatched =
+      activeListTab === "全部" ||
+      (activeListTab === "我的待处理" && item.owner === currentUser && !["已关闭", "已解决待确认"].includes(item.status)) ||
+      (activeListTab === "已解决待确认" && item.status === "已解决待确认") ||
+      (activeListTab === "已关闭" && item.status === "已关闭") ||
+      (activeListTab === "已超时" && slaStatus(item) === "已超时");
 
     return (
+      tabMatched &&
       (!search || searchable.includes(search)) &&
-      (!els.sourceFilter.value || ticket.source === els.sourceFilter.value) &&
-      (!els.statusFilter.value || ticket.status === els.statusFilter.value) &&
-      (!els.priorityFilter.value || ticket.priority === els.priorityFilter.value) &&
-      (!els.ownerFilter.value || ticket.owner === els.ownerFilter.value) &&
-      (!els.modelFilter.value || ticket.model === els.modelFilter.value) &&
-      (!els.slaFilter.value || ticket.sla === els.slaFilter.value) &&
-      (!els.alarmFilter.value ||
-        (els.alarmFilter.value === "yes" ? Boolean(ticket.alarmNo) : !ticket.alarmNo))
+      (!els.sourceFilter.value || item.source === els.sourceFilter.value) &&
+      (!els.statusFilter.value || item.status === els.statusFilter.value) &&
+      (!els.priorityFilter.value || item.priority === els.priorityFilter.value) &&
+      (!els.ownerFilter.value || item.owner === els.ownerFilter.value) &&
+      (!els.modelFilter.value || item.model === els.modelFilter.value) &&
+      (!els.slaFilter.value || slaStatus(item) === els.slaFilter.value) &&
+      (!els.alarmFilter.value || (els.alarmFilter.value === "yes" ? Boolean(item.alarmNo) : !item.alarmNo))
     );
   });
 }
 
+function renderListTabs() {
+  const tabs = ["全部", "我的待处理", "已解决待确认", "已关闭", "已超时"];
+  els.listTabs.innerHTML = tabs.map((tab) => {
+    const count = tickets.filter((item) => {
+      if (tab === "全部") return true;
+      if (tab === "我的待处理") return item.owner === currentUser && !["已关闭", "已解决待确认"].includes(item.status);
+      if (tab === "已超时") return slaStatus(item) === "已超时";
+      return item.status === tab;
+    }).length;
+    return `<button class="list-tab ${activeListTab === tab ? "active" : ""}" type="button" data-list-tab="${tab}">${tab}<span>${count}</span></button>`;
+  }).join("");
+}
+
 function renderSummary() {
   const total = tickets.length;
-  const pending = tickets.filter((ticket) => ticket.status === "待受理").length;
-  const processing = tickets.filter((ticket) => ticket.status === "处理中").length;
-  const supplement = tickets.filter((ticket) => ticket.status === "待补充").length;
-  const overdue = tickets.filter((ticket) => ticket.sla === "已超时").length;
+  const mine = tickets.filter((item) => item.owner === currentUser && !["已关闭", "已解决待确认"].includes(item.status)).length;
+  const l1 = tickets.filter((item) => item.level === "L1" && item.status === "处理中").length;
+  const l2 = tickets.filter((item) => item.level === "L2" && item.status === "处理中").length;
+  const l3 = tickets.filter((item) => item.level === "L3" && item.status === "处理中").length;
+  const overdue = tickets.filter((item) => slaStatus(item) === "已超时").length;
   els.summaryStrip.innerHTML = [
     ["全部工单", total, "info"],
-    ["待受理", pending, "danger"],
-    ["处理中", processing, "info"],
-    ["待补充", supplement, "warning"],
+    ["我的待处理", mine, "info"],
+    ["L1处理中", l1, "info"],
+    ["L2处理中", l2, "warning"],
+    ["L3处理中", l3, "danger"],
     ["已超时", overdue, "danger"]
-  ]
-    .map(([label, count, tone]) => `<div class="summary-card ${tone}"><span>${label}</span><strong>${count}</strong></div>`)
-    .join("");
+  ].map(([label, count, tone]) => `<div class="summary-card ${tone}"><span>${label}</span><strong>${count}</strong></div>`).join("");
 }
 
 function renderTickets() {
+  renderListTabs();
+  renderSummary();
   const rows = filteredTickets();
-  els.tableBody.innerHTML = rows
-    .map(
-      (ticket) => `
-        <tr data-ticket-id="${ticket.id}" tabindex="0">
-          <td>${escapeHtml(ticket.id)}</td>
-          <td>${escapeHtml(ticket.source)}</td>
-          <td title="${escapeHtml(ticket.title)}">${escapeHtml(ticket.title)}</td>
-          <td>${escapeHtml(ticket.station)}</td>
-          <td>${escapeHtml(ticket.model)} / ${escapeHtml(ticket.vin || "-")}</td>
-          <td><span class="badge ${statusClass(ticket.status)}">${escapeHtml(ticket.status)}</span></td>
-          <td>${escapeHtml(ticket.priority)}</td>
-          <td><span class="badge ${slaClass(ticket.sla)}">${escapeHtml(ticket.sla)}</span></td>
-          <td>${escapeHtml(ticket.owner)}</td>
-          <td>${escapeHtml(ticket.createdAt)}</td>
-          <td>
-            <button class="link-button" type="button" data-row-action="view" data-ticket-id="${ticket.id}">查看</button>
-            ${ticket.status === "待受理" ? `<button class="link-button" type="button" data-row-action="accept" data-ticket-id="${ticket.id}">受理</button>` : ""}
-          </td>
-        </tr>
-      `
-    )
-    .join("");
+  els.tableBody.innerHTML = rows.map((item) => {
+    const currentSla = slaStatus(item);
+    return `
+      <tr data-ticket-id="${item.id}" tabindex="0">
+        <td>${escapeHtml(item.id)}</td>
+        <td>${escapeHtml(item.source)}</td>
+        <td title="${escapeHtml(item.title)}">${escapeHtml(item.title)}</td>
+        <td>${escapeHtml(item.station)}</td>
+        <td>${escapeHtml(item.model)} / ${escapeHtml(item.vin || "-")}</td>
+        <td><span class="badge ${levelClass(item.level)}">${escapeHtml(item.level)}</span></td>
+        <td><span class="badge ${statusClass(item.status)}">${escapeHtml(item.status)}</span></td>
+        <td>${escapeHtml(item.owner)}</td>
+        <td><span class="badge ${slaClass(currentSla)}">${escapeHtml(currentSla)}</span></td>
+        <td>${escapeHtml(item.satisfaction?.status || "不适用")}</td>
+        <td>
+          <button class="link-button" type="button" data-row-action="view" data-ticket-id="${item.id}">查看</button>
+          ${item.status === "待受理" ? `<button class="link-button" type="button" data-row-action="accept" data-ticket-id="${item.id}">受理</button>` : ""}
+        </td>
+      </tr>
+    `;
+  }).join("");
   els.emptyState.style.display = rows.length ? "none" : "block";
   els.resultCount.textContent = `共 ${rows.length} 条`;
-  renderSummary();
 }
 
 function renderDetail() {
-  const ticket = getTicket();
-  if (!ticket) {
+  const item = getTicket();
+  if (!item) {
     els.detailRoot.innerHTML = `<div class="empty-state in-detail">暂无可查看工单</div>`;
     return;
   }
-
-  currentTicketId = ticket.id;
-  els.detailTab.textContent = ticket.id;
-  const actionButtons = buildActionButtons(ticket);
+  currentTicketId = item.id;
+  els.detailTab.textContent = item.id;
+  const currentSla = slaStatus(item);
   els.detailRoot.innerHTML = `
     <div class="detail-header">
       <div>
-        <p class="breadcrumb">首页 / 技术支持工单 / ${escapeHtml(ticket.id)}</p>
-        <h1>${escapeHtml(ticket.title)}</h1>
+        <p class="breadcrumb">首页 / 技术支持工单 / ${escapeHtml(item.id)}</p>
+        <h1>${escapeHtml(item.title)}</h1>
         <div class="meta-line">
-          <span>编号 ${escapeHtml(ticket.id)}</span>
-          <span class="badge ${statusClass(ticket.status)}">${escapeHtml(ticket.status)}</span>
-          <span class="badge ${slaClass(ticket.sla)}">SLA ${escapeHtml(ticket.sla)}</span>
-          <span>来源：${escapeHtml(ticket.source)}</span>
-          <span>当前处理人：${escapeHtml(ticket.owner)}</span>
+          <span>编号 ${escapeHtml(item.id)}</span>
+          <span class="badge ${levelClass(item.level)}">当前环节 ${escapeHtml(item.level)}</span>
+          <span class="badge ${statusClass(item.status)}">${escapeHtml(item.status)}</span>
+          <span class="badge ${slaClass(currentSla)}">SLA ${escapeHtml(currentSla)}</span>
+          <span>${escapeHtml(groupOf(item).name)}</span>
+          <span>当前处理人：${escapeHtml(item.owner)}</span>
+          <span>当前登录人：${escapeHtml(currentUser)}</span>
         </div>
       </div>
       <div class="heading-actions">
         <button class="button secondary" type="button" data-view="list">返回列表</button>
         <button class="button secondary" type="button" data-op="join-group">加入群</button>
-        ${canEdit(ticket) ? `<button class="button secondary" type="button" data-open-ticket="edit">编辑</button>` : ""}
+        ${canEdit(item) ? `<button class="button secondary" type="button" data-open-ticket="edit">编辑</button>` : ""}
       </div>
     </div>
 
-    <div class="detail-toolbar">${actionButtons}</div>
+    <div class="detail-toolbar">${buildActionButtons(item)}</div>
 
     <div class="detail-grid">
       ${panel("工单基本信息", dl([
-        ["来源", ticket.source],
+        ["来源", item.source],
         ["工单类型", "技术支持工单"],
-        ["状态", ticket.status],
-        ["创建时间", ticket.createdAt],
-        ["更新时间", ticket.updatedAt],
-        ["当前处理人", ticket.owner],
-        ["是否已提取事件", ticket.eventIds.length ? "是" : "否"],
-        ["是否已沉淀知识", ticket.knowledgeIds.length ? "是" : "否"]
+        ["状态", item.status],
+        ["优先级", item.priority],
+        ["创建时间", item.createdAt],
+        ["更新时间", item.updatedAt],
+        ["当前环节", item.level],
+        ["当前处理组", groupOf(item).name],
+        ["当前处理人", item.owner],
+        ["当前环节SLA", slaText(item)],
+        ["升级次数", String(Object.values(item.stages || {}).filter((stageItem) => ["升级L2", "升级L3"].includes(stageItem.result)).length)],
+        ["满意度状态", item.satisfaction?.status || "不适用"]
       ]))}
 
+      ${panel("三环处理信息", stageTable(item))}
+
       ${panel("服务站与车辆信息", dl([
-        ["服务站", ticket.station],
-        ["服务站编码", ticket.stationCode],
-        ["区域", ticket.region],
-        ["提单人", `${ticket.reporter}${ticket.phone ? " / " + ticket.phone : ""}`],
-        ["VIN", ticket.vin || "-"],
-        ["车型", `${ticket.model} ${ticket.year}`],
-        ["里程", ticket.mileage],
-        ["保修状态", ticket.warranty]
+        ["服务站", item.station],
+        ["服务站编码", item.stationCode],
+        ["区域", item.region],
+        ["提单人", `${item.reporter}${item.phone ? " / " + item.phone : ""}`],
+        ["VIN", item.vin || "-"],
+        ["车型", `${item.model} ${item.year}`],
+        ["里程", item.mileage],
+        ["保修状态", item.warranty]
       ]))}
 
       ${panel("故障与诉求信息", `
         <div class="narrative">
-          <p><strong>故障发生时间：</strong>${escapeHtml(ticket.faultTime || "-")}　<strong>频率：</strong>${escapeHtml(ticket.frequency)}　<strong>安全影响：</strong>${escapeHtml(ticket.safetyImpact)}</p>
-          <p><strong>故障现象：</strong>${escapeHtml(ticket.symptom)}</p>
-          <p><strong>服务站已做检查：</strong>${escapeHtml(ticket.checks || "暂无")}</p>
-          <p><strong>服务站诉求：</strong>${escapeHtml(ticket.request || "暂无")}</p>
+          <p><strong>故障发生时间：</strong>${escapeHtml(item.faultTime || "-")}　<strong>频率：</strong>${escapeHtml(item.frequency)}　<strong>安全影响：</strong>${escapeHtml(item.safetyImpact)}</p>
+          <p><strong>故障现象：</strong>${escapeHtml(item.symptom)}</p>
+          <p><strong>服务站已做检查：</strong>${escapeHtml(item.checks || "暂无")}</p>
+          <p><strong>服务站诉求：</strong>${escapeHtml(item.request || "暂无")}</p>
         </div>
-        ${fileRow(ticket.attachments)}
+        ${fileRow(item.attachments)}
       `, "wide")}
 
       ${panel("关联信息", dl([
-        ["400工单", ticket.order400 || "暂无"],
-        ["车联网告警", ticket.alarmNo || "暂无"],
-        ["告警等级", ticket.alarmLevel || "无"],
-        ["事件单", ticket.eventIds.join("、") || "暂无"],
-        ["问题单", ticket.problemIds.join("、") || "暂无"],
-        ["知识库工单", ticket.knowledgeIds.join("、") || "暂无"]
+        ["400工单", item.order400 || "暂无"],
+        ["车联网告警", item.alarmNo || "暂无"],
+        ["告警等级", item.alarmLevel || "无"],
+        ["事件单", item.eventIds.join("、") || "暂无"],
+        ["问题单", item.problemIds.join("、") || "暂无"],
+        ["知识库工单", item.knowledgeIds.join("、") || "暂无"]
       ]))}
 
-      ${panel("处理记录", timelineHtml(ticket.logs))}
+      ${panel("满意度评分", satisfactionHtml(item))}
+      ${panel("处理记录", timelineHtml(item.logs), "wide")}
     </div>
   `;
 }
 
-function buildActionButtons(ticket) {
-  if (ticket.status === "已关闭") {
-    return `<span class="muted">工单已关闭，仅可查看历史记录。</span>`;
+function buildActionButtons(item) {
+  if (item.status === "已关闭") {
+    const needsRating = item.satisfaction?.status === "待评分";
+    return `${needsRating ? `<button class="button primary" type="button" data-op="satisfaction">满意度评分</button>` : ""}<span class="muted">工单已关闭，仅可查看历史记录。</span>`;
   }
   const buttons = [];
-  if (ticket.status === "草稿") {
+  if (item.status === "草稿") {
     buttons.push(`<button class="button primary" type="button" data-op="submit-draft">提交工单</button>`);
   }
-  if (ticket.status === "待受理") {
+  if (item.status === "待受理") {
     buttons.push(`<button class="button primary" type="button" data-op="accept">受理</button>`);
   }
-  if (ticket.status !== "草稿") {
+  if (item.status !== "草稿") {
     buttons.push(`<button class="button secondary" type="button" data-op="assign">分派</button>`);
-    buttons.push(`<button class="button secondary" type="button" data-op="reply">回复处理意见</button>`);
   }
-  if (ticket.status === "处理中") {
+  if (item.status === "处理中") {
     buttons.push(`<button class="button secondary" type="button" data-op="request-supplement">要求补充</button>`);
-    buttons.push(`<button class="button primary" type="button" data-op="resolve">给出解决方案</button>`);
+    if (item.level === "L1") buttons.push(`<button class="button secondary" type="button" data-op="upgrade-l2">升级至L2</button>`);
+    if (item.level === "L2") buttons.push(`<button class="button secondary" type="button" data-op="upgrade-l3">升级至L3</button>`);
+    if (item.owner === currentUser) {
+      buttons.push(`<button class="button primary" type="button" data-op="resolve">给出解决方案</button>`);
+    } else {
+      buttons.push(`<button class="button ghost" type="button" data-op="resolve-denied">给出解决方案</button>`);
+    }
   }
-  if (ticket.status === "待补充") {
+  if (item.status === "待补充") {
     buttons.push(`<button class="button primary" type="button" data-op="station-supplement">模拟服务站补充</button>`);
   }
-  if (ticket.status === "已解决待确认") {
-    buttons.push(`<button class="button secondary" type="button" data-op="reopen">退回处理中</button>`);
-  }
-  if (ticket.status !== "草稿") {
-    buttons.push(`<button class="button danger" type="button" data-op="close">关闭工单</button>`);
+  if (item.status === "已解决待确认") {
+    buttons.push(`<button class="button secondary" type="button" data-op="reopen">退回继续处理</button>`);
+    buttons.push(`<button class="button danger" type="button" data-op="close">确认关闭</button>`);
   }
   return buttons.join("");
 }
 
 function panel(title, content, extraClass = "") {
-  return `
-    <article class="section-panel ${extraClass}">
-      <button class="section-title" type="button">${escapeHtml(title)}</button>
-      ${content}
-    </article>
-  `;
+  return `<article class="section-panel ${extraClass}"><button class="section-title" type="button">${escapeHtml(title)}</button>${content}</article>`;
 }
 
 function dl(items) {
+  return `<dl>${items.map(([label, value]) => `<div><dt>${escapeHtml(label)}</dt><dd>${escapeHtml(value)}</dd></div>`).join("")}</dl>`;
+}
+
+function stageTable(item) {
+  const stages = item.stages || {};
   return `
-    <dl>
-      ${items.map(([label, value]) => `<div><dt>${escapeHtml(label)}</dt><dd>${escapeHtml(value)}</dd></div>`).join("")}
-    </dl>
+    <div class="stage-table">
+      ${["L1", "L2", "L3"].map((level) => {
+        const group = SUPPORT_GROUPS[level];
+        const current = stages[level] || stage("", "", "", "未开始", "");
+        return `
+          <div class="stage-row ${item.level === level ? "active" : ""}">
+            <strong>${level}</strong>
+            <span>${escapeHtml(group.name)}</span>
+            <span>处理人：${escapeHtml(current.owner || "-")}</span>
+            <span>时效：${group.slaHours}小时</span>
+            <span>开始：${escapeHtml(current.start || "-")}</span>
+            <span>截止：${escapeHtml(current.due || "-")}</span>
+            <span>结果：${escapeHtml(current.result || "未开始")}</span>
+            <em>${escapeHtml(current.note || "")}</em>
+          </div>
+        `;
+      }).join("")}
+    </div>
   `;
+}
+
+function satisfactionHtml(item) {
+  const s = item.satisfaction || defaultSatisfaction(item.source);
+  if (s.status === "不适用") return `<div class="narrative"><p>车联网告警来源关闭后不触发满意度评分。</p></div>`;
+  if (s.status === "未触发") {
+    return `<div class="narrative"><p><strong>${escapeHtml(s.channel)}</strong>：工单关闭后触发。</p></div>`;
+  }
+  if (s.status === "待评分") {
+    return `<div class="narrative"><p><strong>${escapeHtml(s.channel)}</strong>：工单关闭后待评分。</p></div>`;
+  }
+  return dl([
+    ["评分渠道", s.channel],
+    ["评分", `${s.score}星`],
+    ["是否解决", s.solved],
+    ["评价内容", s.comment],
+    ["评分人", s.rater],
+    ["评分时间", s.ratedAt]
+  ]);
 }
 
 function fileRow(files = []) {
@@ -553,21 +728,17 @@ function fileRow(files = []) {
 function timelineHtml(logs = []) {
   return `
     <ol class="timeline">
-      ${logs
-        .map(
-          (item) => `
-            <li>
-              <time>${escapeHtml(item.time)}</time>
-              <strong>${escapeHtml(item.actor)}</strong>
-              <span>
-                <b>${escapeHtml(item.action)}</b>：${escapeHtml(item.content)}
-                <em>${item.visibleToStation ? "服务站可见" : "内部可见"} · ${escapeHtml(item.from)} → ${escapeHtml(item.to)}</em>
-                ${item.attachments?.length ? fileRow(item.attachments) : ""}
-              </span>
-            </li>
-          `
-        )
-        .join("")}
+      ${logs.map((item) => `
+        <li>
+          <time>${escapeHtml(item.time)}</time>
+          <strong>${escapeHtml(item.actor)}</strong>
+          <span>
+            <b>${escapeHtml(item.action)}</b>：${escapeHtml(item.content)}
+            <em>${item.visibleToStation ? "服务站可见" : "内部可见"} · ${escapeHtml(item.from)} → ${escapeHtml(item.to)}</em>
+            ${item.attachments?.length ? fileRow(item.attachments) : ""}
+          </span>
+        </li>
+      `).join("")}
     </ol>
   `;
 }
@@ -597,16 +768,16 @@ function closeModal(node) {
 function openTicketForm(mode) {
   const form = els.ticketForm;
   form.reset();
-  const ticket = mode === "edit" ? getTicket() : null;
-  els.ticketModalTitle.textContent = ticket ? `编辑工单 ${ticket.id}` : "新建技术支持工单";
-  form.elements.id.value = ticket?.id || "";
-  const source = ticket?.source || "服务站提单";
+  const item = mode === "edit" ? getTicket() : null;
+  els.ticketModalTitle.textContent = item ? `编辑工单 ${item.id}` : "新建技术支持工单";
+  form.elements.id.value = item?.id || "";
+  const source = item?.source || "服务站提单";
   form.querySelector(`[name="source"][value="${source}"]`).checked = true;
-
-  const values = ticket || {
+  form.elements.owner.innerHTML = ownerOptions("L1", true);
+  const values = item || {
     title: "PTCan busoff 故障（X6上为PCAN_busoff）",
     priority: "普通",
-    owner: "张三",
+    owner: SUPPORT_GROUPS.L1.people[0],
     station: "上海浦东瑞驰服务站",
     stationCode: "SH-PD-018",
     region: "华东一区",
@@ -617,13 +788,13 @@ function openTicketForm(mode) {
     year: "2025款 四驱智享版",
     mileage: "12000 km",
     warranty: "保内",
-    faultTime: "2026-05-08T09:35",
+    faultTime: "2026-05-11T09:35",
     frequency: "偶发",
     safetyImpact: "待评估",
-    symptom: "车辆上电后偶发通信中断，仪表提示异常，服务站读取到 PTCan busoff 相关故障码。",
-    checks: "已读取 DTC，已检查网关线束，暂未发现明显外观损伤。",
+    symptom: "车辆上电后偶发通信中断，仪表提示异常。",
+    checks: "已读取 DTC，已检查网关线束。",
     request: "请求主机厂提供进一步诊断建议。",
-    order400: "400-20260508-0319",
+    order400: "400-20260511-0319",
     alarmNo: "ALM-CAN-00981",
     alarmLevel: "二级",
     attachments: ["诊断报告.pdf", "现场照片.jpg"]
@@ -659,10 +830,13 @@ function fromTicketForm(statusMode) {
   const status = statusMode === "draft" ? "草稿" : existing?.status === "草稿" ? submittedStatus : existing?.status || submittedStatus;
   const id = existing?.id || nextTicketId();
   const source = new FormData(form).get("source");
-  const attachments = data.attachments
-    .split(",")
-    .map((item) => item.trim())
-    .filter(Boolean);
+  const attachments = attachmentList(data.attachments);
+  const start = existing?.levelStartedAt || (status === "处理中" ? nowText() : "");
+  const due = existing?.levelDueAt || (status === "处理中" ? addHours(start, SUPPORT_GROUPS.L1.slaHours) : "");
+  const stages = existing?.stages || {};
+  if (status === "处理中" && !stages.L1) {
+    stages.L1 = stage(data.owner, start, due, "处理中", "默认进入 L1");
+  }
 
   return {
     ...(existing || {}),
@@ -671,6 +845,7 @@ function fromTicketForm(statusMode) {
     title: data.title.trim(),
     priority: data.priority,
     owner: data.owner || "未分派",
+    level: existing?.level || "L1",
     station: data.station.trim(),
     stationCode: data.stationCode.trim(),
     region: data.region.trim(),
@@ -682,9 +857,10 @@ function fromTicketForm(statusMode) {
     mileage: data.mileage.trim(),
     warranty: data.warranty,
     status,
-    sla: status === "草稿" ? "不计入" : existing?.sla || "正常",
     createdAt: existing?.createdAt || nowText(),
     updatedAt: nowText(),
+    levelStartedAt: start,
+    levelDueAt: due,
     faultTime: data.faultTime ? data.faultTime.replace("T", " ") : "",
     frequency: data.frequency,
     safetyImpact: data.safetyImpact,
@@ -697,51 +873,30 @@ function fromTicketForm(statusMode) {
     eventIds: existing?.eventIds || [],
     problemIds: existing?.problemIds || [],
     knowledgeIds: existing?.knowledgeIds || [],
+    satisfaction: existing?.satisfaction || defaultSatisfaction(source),
     attachments,
+    stages,
     logs: existing?.logs || []
   };
 }
 
 function saveTicket(statusMode) {
-  const ticket = fromTicketForm(statusMode);
-  if (!ticket.title) {
-    showToast("请至少填写工单标题");
-    return;
-  }
-  if (statusMode !== "draft" && (!ticket.station || !ticket.reporter || !ticket.symptom)) {
-    showToast("请补齐标题、服务站、提单人和故障现象");
-    return;
-  }
-  if (ticket.vin && ticket.vin.length !== 17) {
-    showToast("VIN 应为 17 位，可为空");
-    return;
-  }
-  const duplicate400 = ticket.order400
-    ? tickets.find((item) => item.id !== ticket.id && item.order400 === ticket.order400)
-    : null;
-  if (statusMode !== "draft" && duplicate400) {
-    showToast(`该400工单已关联 ${duplicate400.id}，请先确认是否重复建单`);
-    return;
-  }
-  const existingIndex = tickets.findIndex((item) => item.id === ticket.id);
+  const item = fromTicketForm(statusMode);
+  if (!item.title) return showToast("请至少填写工单标题");
+  if (statusMode !== "draft" && (!item.station || !item.reporter || !item.symptom)) return showToast("请补齐标题、服务站、提单人和故障现象");
+  if (item.vin && item.vin.length !== 17) return showToast("VIN 应为 17 位，可为空");
+  const duplicate400 = item.order400 ? tickets.find((ticketItem) => ticketItem.id !== item.id && ticketItem.order400 === item.order400) : null;
+  if (statusMode !== "draft" && duplicate400) return showToast(`该400工单已关联 ${duplicate400.id}，请先确认是否重复建单`);
+
+  const existingIndex = tickets.findIndex((ticketItem) => ticketItem.id === item.id);
   const action = statusMode === "draft" ? "保存草稿" : existingIndex >= 0 ? "编辑工单" : "提交工单";
   const from = existingIndex >= 0 ? tickets[existingIndex].status : "-";
-  const to = ticket.status;
-  const message =
-    statusMode === "draft"
-      ? "草稿已保存，不进入 SLA"
-      : ticket.status === "处理中"
-        ? "工单已提交并因指定处理人直接进入处理中"
-        : "工单已提交，等待受理";
+  const message = statusMode === "draft" ? "草稿已保存，不进入 SLA" : item.status === "处理中" ? "工单已提交，默认进入 L1 处理" : "工单已提交，等待 L1 受理";
+  item.logs = [log(shortTime(), currentUser, action, message, false, [], from, item.status), ...item.logs];
 
-  ticket.logs = [
-    log(shortTime(), CURRENT_USER, action, message, false, [], from, to),
-    ...ticket.logs
-  ];
-
-  if (existingIndex >= 0) tickets[existingIndex] = ticket;
-  else tickets.unshift(ticket);
-  currentTicketId = ticket.id;
+  if (existingIndex >= 0) tickets[existingIndex] = item;
+  else tickets.unshift(item);
+  currentTicketId = item.id;
   persist();
   renderTickets();
   renderDetail();
@@ -751,7 +906,7 @@ function saveTicket(statusMode) {
 }
 
 function openAction(action) {
-  const ticket = getTicket();
+  const item = getTicket();
   els.actionForm.reset();
   els.actionForm.elements.action.value = action;
   const configs = {
@@ -759,18 +914,9 @@ function openAction(action) {
       title: "分派工单",
       submit: "确认分派",
       fields: `
-        <label><span>处理人</span><select name="owner"><option>张三</option><option>李敏</option><option>周伟</option><option>陈工</option></select></label>
-        <label><span>分派说明</span><textarea name="content">请接手该工单，并在 SLA 到期前给出处理意见。</textarea></label>
-      `
-    },
-    reply: {
-      title: "回复处理意见",
-      submit: "提交处理记录",
-      fields: `
-        <label><span>处理动作</span><select name="recordAction"><option>回复处理意见</option><option>内部备注</option><option>诊断建议</option></select></label>
-        <fieldset class="radio-group"><legend>对服务站可见</legend><label><input type="radio" name="visible" value="yes" checked /> 是</label><label><input type="radio" name="visible" value="no" /> 否</label></fieldset>
-        <label><span>处理内容</span><textarea name="content">请服务站补充网关日志和DTC截图。</textarea></label>
-        <label><span>附件名，多个用逗号分隔</span><input name="attachments" placeholder="诊断指导.pdf" /></label>
+        <label><span>当前环节</span><input value="${item.level} · ${groupOf(item).name}" disabled /></label>
+        <label><span>处理人</span><select name="owner">${ownerOptions(item.level)}</select></label>
+        <label><span>分派说明</span><textarea name="content">请接手该 ${item.level} 工单，并在当前环节 SLA 内给出处理结论。</textarea></label>
       `
     },
     "request-supplement": {
@@ -778,7 +924,7 @@ function openAction(action) {
       submit: "发送补充要求",
       fields: `
         <label><span>补充要求</span><textarea name="content">请上传网关日志、DTC截图、现场线束照片。</textarea></label>
-        <label><span>截止时间</span><input name="deadline" value="2026-05-09 18:00" /></label>
+        <label><span>截止时间</span><input name="deadline" value="2026-05-12 18:00" /></label>
       `
     },
     "station-supplement": {
@@ -789,121 +935,201 @@ function openAction(action) {
         <label><span>附件名，多个用逗号分隔</span><input name="attachments" value="gateway_log.zip, DTC截图.png, 现场线束照片.jpg" /></label>
       `
     },
+    "upgrade-l2": {
+      title: "升级至L2",
+      submit: "确认升级",
+      fields: `
+        <label><span>L2处理人</span><select name="owner">${ownerOptions("L2")}</select></label>
+        <label><span>升级原因</span><textarea name="content">L1 无法独立判断根因，需要 L2 二线技术专家介入。</textarea></label>
+      `
+    },
+    "upgrade-l3": {
+      title: "升级至L3",
+      submit: "确认升级",
+      fields: `
+        <label><span>L3处理人</span><select name="owner">${ownerOptions("L3")}</select></label>
+        <label><span>升级原因</span><textarea name="content">L2 判断涉及复杂系统或设计问题，需要 L3 高级专家/研发支持介入。</textarea></label>
+      `
+    },
     resolve: {
       title: "给出解决方案",
       submit: "提交解决方案",
       fields: `
-        <label><span>解决方案</span><textarea name="content">建议刷新网关控制器至 GW_25.05.01，刷新后清除 DTC 并路试 20 分钟。</textarea></label>
-        <fieldset class="radio-group"><legend>是否建议沉淀知识</legend><label><input type="radio" name="knowledge" value="yes" checked /> 是</label><label><input type="radio" name="knowledge" value="no" /> 否</label></fieldset>
+        <label><span>当前处理环节</span><input value="${item.level} · ${item.owner}" disabled /></label>
+        <label><span>解决方案</span><textarea name="content">建议按当前诊断路径处理，并完成复测验证。</textarea></label>
+        <label><span>附件名，多个用逗号分隔</span><input name="attachments" placeholder="解决方案.pdf" /></label>
       `
     },
     close: {
-      title: "关闭工单",
+      title: "确认关闭工单",
       submit: "确认关闭",
       fields: `
         <label><span>关闭原因</span><select name="closeReason"><option>已解决</option><option>重复工单</option><option>无效工单</option><option>转其他流程</option><option>无需处理</option></select></label>
-        <label><span>处理结论</span><textarea name="content">已确认按指导方案完成处理，建议关闭。</textarea></label>
-        <fieldset class="radio-group"><legend>是否建议沉淀知识</legend><label><input type="radio" name="knowledge" value="yes" /> 是</label><label><input type="radio" name="knowledge" value="no" checked /> 否</label></fieldset>
+        <label><span>处理结论</span><textarea name="content">已确认解决方案完成验证，关闭工单。</textarea></label>
+      `
+    },
+    satisfaction: {
+      title: item.satisfaction?.channel || "满意度评分",
+      submit: "提交评分",
+      fields: `
+        <label><span>评分</span><select name="score"><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option></select></label>
+        <label><span>是否解决问题</span><select name="solved"><option>是</option><option>否</option></select></label>
+        <label><span>评价内容</span><textarea name="content">${item.source === "400工单" ? "客服回访客户后代录评分。" : "服务站确认问题已解决。"}</textarea></label>
       `
     }
   };
-
   const config = configs[action];
   if (!config) return;
-  els.actionTitle.textContent = `${config.title} - ${ticket.id}`;
+  els.actionTitle.textContent = `${config.title} - ${item.id}`;
   els.actionSubmit.textContent = config.submit;
   els.actionFields.innerHTML = config.fields;
-  if (action === "assign") els.actionForm.elements.owner.value = ticket.owner === "未分派" ? CURRENT_USER : ticket.owner;
+  if (action === "assign") els.actionForm.elements.owner.value = item.owner === "未分派" ? SUPPORT_GROUPS[item.level].people[0] : item.owner;
   openModal(els.actionModal);
 }
 
 function applyAction(action, formData) {
-  const ticket = getTicket();
-  if (!ticket || isClosed(ticket)) {
-    showToast("已关闭工单不可继续处理");
-    return;
-  }
-  const before = ticket.status;
+  const item = getTicket();
+  if (!item) return;
+  if (isClosed(item) && action !== "satisfaction") return showToast("已关闭工单不可继续处理");
+  const beforeStatus = item.status;
+  const beforeLevel = item.level;
   let recordAction = "";
   let content = "";
   let visible = false;
-  let attachments = attachmentList(formData.get("attachments"));
+  const attachments = attachmentList(formData.get("attachments"));
 
   if (action === "accept") {
-    ticket.status = "处理中";
-    ticket.owner = ticket.owner === "未分派" ? CURRENT_USER : ticket.owner;
-    ticket.sla = ticket.sla === "已超时" ? "即将超时" : ticket.sla;
-    recordAction = "受理工单";
-    content = "已受理并开始处理。";
+    const start = nowText();
+    item.status = "处理中";
+    item.level = "L1";
+    item.owner = item.owner === "未分派" ? SUPPORT_GROUPS.L1.people[0] : item.owner;
+    item.levelStartedAt = start;
+    item.levelDueAt = addHours(start, SUPPORT_GROUPS.L1.slaHours);
+    item.stages.L1 = stage(item.owner, item.levelStartedAt, item.levelDueAt, "处理中", "L1受理");
+    recordAction = "L1受理工单";
+    content = "已进入 L1 处理，SLA 2小时。";
   }
 
   if (action === "submit-draft") {
-    ticket.status = ticket.owner && ticket.owner !== "未分派" ? "处理中" : "待受理";
-    ticket.sla = "正常";
+    item.status = item.owner && item.owner !== "未分派" ? "处理中" : "待受理";
+    if (item.status === "处理中") {
+      const start = nowText();
+      item.level = "L1";
+      item.levelStartedAt = start;
+      item.levelDueAt = addHours(start, SUPPORT_GROUPS.L1.slaHours);
+      item.stages.L1 = stage(item.owner, item.levelStartedAt, item.levelDueAt, "处理中", "草稿提交后进入 L1");
+    }
     recordAction = "提交草稿";
-    content = ticket.status === "处理中" ? "草稿已提交，因指定处理人直接进入处理中。" : "草稿已提交，等待受理。";
+    content = item.status === "处理中" ? "草稿已提交，默认进入 L1 处理。" : "草稿已提交，等待 L1 受理。";
   }
 
   if (action === "assign") {
-    ticket.owner = formData.get("owner");
-    if (ticket.status === "待受理") ticket.status = "处理中";
+    const owner = formData.get("owner");
+    if (!SUPPORT_GROUPS[item.level].people.includes(owner)) return showToast(`只能选择${groupOf(item).name}人员`);
+    item.owner = owner;
+    if (item.status === "待受理") {
+      const start = nowText();
+      item.status = "处理中";
+      item.levelStartedAt = start;
+      item.levelDueAt = addHours(start, groupOf(item).slaHours);
+    }
+    item.stages[item.level] = stage(item.owner, item.levelStartedAt, item.levelDueAt, "处理中", "已分派");
     recordAction = "分派工单";
-    content = `${formData.get("content") || "已分派工单"} 处理人：${ticket.owner}`;
-  }
-
-  if (action === "reply") {
-    recordAction = formData.get("recordAction") || "回复处理意见";
-    content = formData.get("content") || "提交处理意见。";
-    visible = formData.get("visible") === "yes";
+    content = `${formData.get("content") || "已分派工单"} 处理人：${item.owner}`;
   }
 
   if (action === "request-supplement") {
-    ticket.status = "待补充";
+    item.status = "待补充";
     recordAction = "要求补充材料";
     content = `${formData.get("content") || "请服务站补充材料"} 截止时间：${formData.get("deadline") || "未设置"}`;
     visible = true;
   }
 
   if (action === "station-supplement") {
-    ticket.status = "处理中";
+    item.status = "处理中";
     recordAction = "服务站补充材料";
     content = formData.get("content") || "服务站已补充材料。";
     visible = true;
-    ticket.attachments = [...new Set([...ticket.attachments, ...attachments])];
+    item.attachments = [...new Set([...item.attachments, ...attachments])];
+  }
+
+  if (action === "upgrade-l2" || action === "upgrade-l3") {
+    const nextLevel = action === "upgrade-l2" ? "L2" : "L3";
+    const owner = formData.get("owner");
+    if (!SUPPORT_GROUPS[nextLevel].people.includes(owner)) return showToast(`只能选择${SUPPORT_GROUPS[nextLevel].name}人员`);
+    const start = nowText();
+    item.stages[item.level] = {
+      ...(item.stages[item.level] || stage()),
+      owner: item.owner,
+      start: item.stages[item.level]?.start || item.levelStartedAt,
+      due: item.stages[item.level]?.due || item.levelDueAt,
+      result: nextLevel === "L2" ? "升级L2" : "升级L3",
+      note: formData.get("content") || "升级处理"
+    };
+    item.level = nextLevel;
+    item.owner = owner;
+    item.status = "处理中";
+    item.levelStartedAt = start;
+    item.levelDueAt = addHours(start, SUPPORT_GROUPS[nextLevel].slaHours);
+    item.stages[nextLevel] = stage(owner, item.levelStartedAt, item.levelDueAt, "处理中", "");
+    recordAction = `升级至${nextLevel}`;
+    content = `${formData.get("content") || "升级处理"} 指派：${owner}`;
   }
 
   if (action === "resolve") {
-    ticket.status = "已解决待确认";
+    if (item.owner !== currentUser) return showToast("只有当前环节处理人可以给出解决方案");
+    item.status = "已解决待确认";
+    item.stages[item.level] = {
+      ...(item.stages[item.level] || stage()),
+      owner: item.owner,
+      start: item.stages[item.level]?.start || item.levelStartedAt,
+      due: item.stages[item.level]?.due || item.levelDueAt,
+      result: "已解决",
+      note: formData.get("content") || "已给出解决方案"
+    };
     recordAction = "给出解决方案";
     content = formData.get("content") || "已给出解决方案。";
     visible = true;
-    if (formData.get("knowledge") === "yes" && !ticket.knowledgeIds.length) {
-      ticket.knowledgeIds.push(`KB-${ticket.id.slice(3, 11)}-${ticket.id.slice(-4)}`);
-    }
+    if (!item.knowledgeIds.length) item.knowledgeIds.push(`KB-${item.id.slice(3, 11)}-${item.id.slice(-4)}`);
   }
 
   if (action === "reopen") {
-    ticket.status = "处理中";
-    recordAction = "退回处理中";
+    item.status = "处理中";
+    if (item.stages[item.level]) item.stages[item.level].result = "处理中";
+    recordAction = "退回继续处理";
     content = "处理结论被退回，继续诊断。";
   }
 
   if (action === "close") {
     const closeReason = formData.get("closeReason") || "已解决";
-    ticket.status = "已关闭";
-    ticket.sla = "正常";
+    item.status = "已关闭";
+    item.satisfaction = item.satisfaction || defaultSatisfaction(item.source);
+    if (item.satisfaction.status !== "不适用" && item.satisfaction.status !== "已评分") item.satisfaction.status = "待评分";
     recordAction = "关闭工单";
     content = `${closeReason}：${formData.get("content") || "工单已关闭。"}`;
     visible = true;
-    if (formData.get("knowledge") === "yes" && !ticket.knowledgeIds.length) {
-      ticket.knowledgeIds.push(`KB-${ticket.id.slice(3, 11)}-${ticket.id.slice(-4)}`);
-    }
   }
 
-  ticket.updatedAt = nowText();
-  ticket.logs = [
-    log(shortTime(), action === "station-supplement" ? ticket.reporter : CURRENT_USER, recordAction, content, visible, attachments, before, ticket.status),
-    ...ticket.logs
+  if (action === "satisfaction") {
+    if (!item.satisfaction || item.satisfaction.status === "不适用") return showToast("该来源不需要满意度评分");
+    item.satisfaction = {
+      ...item.satisfaction,
+      status: "已评分",
+      score: Number(formData.get("score")),
+      solved: formData.get("solved"),
+      comment: formData.get("content") || "",
+      rater: item.source === "400工单" ? `${currentUser}（客服代录）` : item.reporter,
+      ratedAt: nowText()
+    };
+    recordAction = "满意度评分";
+    content = `${item.satisfaction.channel}：${item.satisfaction.score}星，是否解决：${item.satisfaction.solved}`;
+    visible = true;
+  }
+
+  item.updatedAt = nowText();
+  item.logs = [
+    log(shortTime(), action === "station-supplement" ? item.reporter : currentUser, recordAction, content, visible, attachments, beforeStatus === item.status ? beforeLevel : beforeStatus, beforeStatus === item.status ? item.level : item.status),
+    ...item.logs
   ];
   persist();
   renderTickets();
@@ -912,10 +1138,7 @@ function applyAction(action, formData) {
 }
 
 function attachmentList(value) {
-  return String(value || "")
-    .split(",")
-    .map((item) => item.trim())
-    .filter(Boolean);
+  return String(value || "").split(",").map((item) => item.trim()).filter(Boolean);
 }
 
 function exportData() {
@@ -924,12 +1147,24 @@ function exportData() {
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
   link.href = url;
-  link.download = "tech-support-tickets.json";
+  link.download = "tech-support-tickets-v0.2.0.json";
   link.click();
   URL.revokeObjectURL(url);
 }
 
+function renderCurrentUserOptions() {
+  els.currentUser.innerHTML = allPeople().map((person) => `<option>${person}</option>`).join("");
+  els.currentUser.value = currentUser;
+}
+
 document.addEventListener("click", (event) => {
+  const listTab = event.target.closest("[data-list-tab]");
+  if (listTab) {
+    activeListTab = listTab.dataset.listTab;
+    renderTickets();
+    return;
+  }
+
   const viewTarget = event.target.closest("[data-view]");
   if (viewTarget) {
     showView(viewTarget.dataset.view);
@@ -980,6 +1215,8 @@ document.addEventListener("click", (event) => {
       applyAction(action, new FormData());
     } else if (action === "join-group") {
       showToast("已模拟加入工单协同群");
+    } else if (action === "resolve-denied") {
+      showToast("只有当前环节处理人可以给出解决方案，请先切换登录人或分派");
     } else {
       openAction(action);
     }
@@ -996,6 +1233,13 @@ els.tableBody.addEventListener("keydown", (event) => {
   }
 });
 
+els.currentUser.addEventListener("change", () => {
+  currentUser = els.currentUser.value;
+  renderTickets();
+  renderDetail();
+  showToast(`当前登录人已切换为 ${currentUser}`);
+});
+
 els.filterForm.addEventListener("submit", (event) => {
   event.preventDefault();
   renderTickets();
@@ -1004,6 +1248,7 @@ els.filterForm.addEventListener("submit", (event) => {
 
 els.resetFilter.addEventListener("click", () => {
   window.setTimeout(() => {
+    activeListTab = "全部";
     renderTickets();
     showToast("筛选条件已重置");
   }, 0);
@@ -1030,10 +1275,11 @@ document.querySelector("#reset-demo-data").addEventListener("click", () => {
   persist();
   renderTickets();
   renderDetail();
-  showToast("测试数据已重置");
+  showToast("测试数据已重置为 v0.2.0");
 });
 
 document.querySelector("#export-data").addEventListener("click", exportData);
 
+renderCurrentUserOptions();
 renderTickets();
 renderDetail();

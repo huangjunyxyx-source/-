@@ -13,10 +13,14 @@
           <span class="brand-mark"></span>
           <div>
             <strong>服务运营平台</strong>
-            <span>Service Operation Platform · v0.1.0</span>
+            <span>Service Operation Platform · v0.2.0</span>
           </div>
         </div>
         <div class="top-actions">
+          <label class="user-switch">
+            <span>模拟登录人</span>
+            <select id="current-user"></select>
+          </label>
           <button class="icon-button" aria-label="通知">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 16v-5a6 6 0 0 0-12 0v5l-2 2h16l-2-2Z"/><path d="M9.5 20a2.8 2.8 0 0 0 5 0"/></svg>
           </button>
@@ -114,6 +118,11 @@
                 <option>李敏</option>
                 <option>周伟</option>
                 <option>陈工</option>
+                <option>王工</option>
+                <option>刘工</option>
+                <option>赵专家</option>
+                <option>孙专家</option>
+                <option>研发韩工</option>
               </select>
             </label>
             <label>
@@ -149,6 +158,8 @@
             </div>
           </form>
 
+          <div class="list-tabs" id="list-tabs" aria-label="列表快捷筛选"></div>
+
           <div class="summary-strip" id="summary-strip"></div>
 
           <div class="table-shell">
@@ -160,11 +171,11 @@
                   <th>标题</th>
                   <th>服务站</th>
                   <th>车型/VIN</th>
+                  <th>环节</th>
                   <th>状态</th>
-                  <th>优先级</th>
-                  <th>SLA</th>
                   <th>处理人</th>
-                  <th>创建时间</th>
+                  <th>SLA</th>
+                  <th>满意度</th>
                   <th>操作</th>
                 </tr>
               </thead>
@@ -207,7 +218,7 @@
           </fieldset>
           <label class="span-2"><span>工单标题</span><input name="title" required maxlength="80" /></label>
           <label><span>优先级</span><select name="priority"><option>普通</option><option>紧急</option><option>高风险</option></select></label>
-          <label><span>处理人</span><select name="owner"><option>未分派</option><option>张三</option><option>李敏</option><option>周伟</option><option>陈工</option></select></label>
+          <label><span>L1处理人</span><select name="owner"><option>未分派</option><option>张三</option><option>李敏</option><option>周伟</option></select></label>
           <label><span>服务站</span><input name="station" required /></label>
           <label><span>服务站编码</span><input name="stationCode" /></label>
           <label><span>所属区域</span><input name="region" /></label>

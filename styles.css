@@ -148,6 +148,28 @@ button {
   background: linear-gradient(135deg, #9fd7ff, #d7ecff);
 }
 
+.user-switch {
+  width: 172px;
+}
+
+.user-switch span {
+  margin: 0 0 2px;
+  color: rgba(255, 255, 255, 0.68);
+  font-size: 10px;
+}
+
+.user-switch select {
+  min-height: 26px;
+  padding: 2px 8px;
+  border-color: rgba(255, 255, 255, 0.28);
+  color: var(--white);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.user-switch option {
+  color: var(--slate-900);
+}
+
 .sidebar {
   grid-row: 2;
   background: var(--white);
@@ -344,9 +366,46 @@ textarea:focus {
   align-self: end;
 }
 
+.list-tabs {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.list-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 34px;
+  padding: 0 12px;
+  border: 1px solid var(--slate-200);
+  border-radius: 6px;
+  color: var(--slate-700);
+  background: var(--white);
+}
+
+.list-tab.active {
+  color: var(--blue-600);
+  border-color: #b8dbff;
+  background: var(--blue-050);
+}
+
+.list-tab span {
+  min-width: 20px;
+  min-height: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  color: var(--slate-700);
+  background: var(--slate-100);
+  font-size: 12px;
+}
+
 .summary-strip {
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: repeat(6, minmax(0, 1fr));
   gap: 10px;
   margin-bottom: 12px;
 }
@@ -531,6 +590,47 @@ tbody tr:hover {
 
 .section-panel.wide {
   grid-column: 1 / -1;
+}
+
+.stage-table {
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+}
+
+.stage-row {
+  display: grid;
+  grid-template-columns: 44px repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  align-items: center;
+  padding: 10px;
+  border: 1px solid var(--slate-100);
+  border-radius: 8px;
+  background: #fbfdff;
+}
+
+.stage-row.active {
+  border-color: #b8dbff;
+  background: var(--blue-050);
+}
+
+.stage-row strong {
+  color: var(--blue-600);
+  font-size: 16px;
+}
+
+.stage-row span,
+.stage-row em {
+  min-width: 0;
+  color: var(--slate-700);
+  font-style: normal;
+  overflow-wrap: anywhere;
+}
+
+.stage-row em {
+  grid-column: 2 / -1;
+  color: var(--slate-500);
+  font-size: 12px;
 }
 
 .section-title {
@@ -806,7 +906,7 @@ fieldset {
   }
 
   table {
-    min-width: 1260px;
+    min-width: 1320px;
   }
 
   .table-shell {
@@ -846,6 +946,14 @@ fieldset {
   .form-grid,
   .summary-strip {
     grid-template-columns: 1fr;
+  }
+
+  .stage-row {
+    grid-template-columns: 1fr;
+  }
+
+  .stage-row em {
+    grid-column: 1;
   }
 
   dl {
